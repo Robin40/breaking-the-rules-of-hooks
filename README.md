@@ -14,7 +14,7 @@ to be implemented using hooks.
 ```typescript jsx
 export type Counter = {
   value: number;
-  increment(): number;
+  increment(): void;
 };
 
 export function useCounter(): Counter {
