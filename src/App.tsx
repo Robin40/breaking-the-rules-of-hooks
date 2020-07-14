@@ -1,25 +1,33 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import {useListState} from "./hooks/ListState";
+import {useCounter} from "./hooks/Counter";
 
 function App() {
+  const counterList = useListState(useCounter);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <div className="App">
+        <div className="App-header">
+          {counterList.values.map((counter, index) => (
+              <div key={counterList.getKey(index)}>
+                <button onClick={counter.increment}>
+                  {counter.value}
+                </button>
+
+                <button onClick={() => counterList.remove(index)}>
+                  ×
+                </button>
+              </div>
+          ))}
+
+          <button onClick={counterList.add}>
+            +
+          </button>
+
+          {counterList.render()}
+        </div>
+      </div>
   );
 }
 

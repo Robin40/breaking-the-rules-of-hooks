@@ -1,44 +1,59 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# breaking-the-rules-of-hooks
+without really breaking them
 
-## Available Scripts
+### Wait, what?
 
-In the project directory, you can run:
+This app consists of a list of counters,
+where you can add, remove and increment any counter.
 
-### `yarn start`
+That is easy to do in React,
+until you want your counters
+(or whatever state in your app)
+to be implemented using hooks.
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```typescript jsx
+export type Counter = {
+  value: number;
+  increment(): number;
+};
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+export function useCounter(): Counter {
+  const [value, setValue] = useState(0);
+  
+  function increment(): void {
+    setValue(x => x + 1);
+  }
+  
+  return { value, increment };
+}
+```
 
-### `yarn test`
+Then you have the following problem
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```typescript jsx
+function App() {
+  const [counters, setCounters] = useState<Counter[]>([]);
+  
+  function addCounter(): void {
+    // you can't do this as it breaks the rules of hooks!
+    setCounters(prev => [...prev, useCounter()])    
+  }
 
-### `yarn build`
+  ...
+  
+  return (
+    <div>
+      {counters.map(...)}
+      <button onClick={addCounter}/>
+    </div>
+  )
+}
+```
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+This repo solves this problem while still using hooks,
+and without ignoring the rules-of-hooks linter.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+- Install packages using `yarn`
+- Run with `yarn start`
+- See that it actually works
+- Explore the code to see how it is done
